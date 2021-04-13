@@ -16,6 +16,7 @@ import numpy as np
 from TSPClasses import *
 import heapq
 import itertools
+from GreedySolver import GreedySolver
 
 
 
