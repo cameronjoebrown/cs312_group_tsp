@@ -1,4 +1,4 @@
-from branch_bound.ReducedCostMatrix import ReducedCostMatrix
+from ReducedCostMatrix import ReducedCostMatrix
 from TSPClasses import City
 from copy import deepcopy
 from typing import List
