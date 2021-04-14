@@ -1,9 +1,9 @@
-from branch_bound.ReducedCostMatrix import ReducedCostMatrix
-from branch_bound.BranchNode import BranchNode
+from ReducedCostMatrix import ReducedCostMatrix
+from BranchNode import BranchNode
 from queue import PriorityQueue
 from copy import deepcopy
 from BaseSolver import BaseSolver
-from greedy.GreedySolver import GreedySolver
+from GreedySolver import GreedySolver
 from random import randrange
 import math
 
