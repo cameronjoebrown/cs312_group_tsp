@@ -17,6 +17,7 @@ from TSPClasses import *
 import heapq
 import itertools
 from GreedySolver import GreedySolver
+from BranchAndBoundSolver import BranchAndBoundSolver
 
 
 
@@ -101,8 +102,14 @@ class TSPSolver:
 		max queue size, total number of states created, and number of pruned states.</returns> 
 	'''
 		
-	def branchAndBound( self, time_allowance=60.0 ):
-		pass
+	# More detailed comments within BranchAndBoundSolver.py
+    	# Time complexity: O(N! * N^2)
+    	# Space complexity: q = size of queue; O(q * N^2)
+    	def branchAndBound(self, time_allowance=60.0):
+        	maxNodes = 100000
+        	solver = BranchAndBoundSolver(self, maxNodes, time_allowance)
+        	solver.solve()
+        	return solver.getResults()
 
 
 
