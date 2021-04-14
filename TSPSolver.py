@@ -16,6 +16,7 @@ import numpy as np
 from TSPClasses import *
 import heapq
 import itertools
+import copy
 
 
 
@@ -108,9 +109,143 @@ class TSPSolver:
 		best solution found.  You may use the other three field however you like.
 		algorithm</returns> 
 	'''
+
+	def createInitialLoop(self, start_node):
+		second_node = self.findNearestNodeToNode(start_node, self.unvisitedCities)
+		third_node = self.findNearestNodeToTwoNodes(start_node, second_node, self.unvisitedCities)
+		return [start_node, second_node, third_node]
+
+	def findNearestNodeToNode(self, current_node, nodes):
+		nearestNode = None
+		distance = math.inf
+		for n in nodes:
+			if (n != current_node):
+				if (current_node.costTo(n) < distance):
+					distance = current_node.costTo(n)
+					nearestNode = n
+		return nearestNode
+
+	def findNearestNodeToTwoNodes(self, node1, node2, nodes):
+		nearestNode = None
+		distance = math.inf
+		for n in nodes:
+			if (n != node1) and (n != node2):
+				if (node2.costTo(n) + n.costTo(node1) < distance):
+					distance = node2.costTo(n) + n.costTo(node1)
+					nearestNode = n
+		return nearestNode
+
+	def findNearestNodeToRoute(self, route):
+		nearestNode = None
+		bestInsertionIndex = None
+		CurrentLowestInsertionCost = math.inf
+		for i in range(0,len(route)):
+			if (i == len(route) - 1):
+				i2 = 0
+			else:
+				i2 = i + 1
+			currEdge = route[i].costTo(route[i2])
+			for j in self.unvisitedCities:
+				costOfInsertion = (route[i].costTo(j) + j.costTo(route[i2])) - currEdge
+				if (costOfInsertion < CurrentLowestInsertionCost):
+					CurrentLowestInsertionCost = costOfInsertion
+					nearestNode = j
+					bestInsertionIndex = i + 1
+		return nearestNode, bestInsertionIndex
+
+	def insertNode(self, route, new_node, index):
+		route.insert(index, new_node)
+		return route
+
+	def routeLength(self, route):
+		length = 0
+		for i in range(0, len(route) - 1):
+			length += route[i].costTo(route[i+1])
+		length += route[i].costTo(route[0])
+		return length
+
+	def printRoute(self, route):
+		string = ""
+		for i in route:
+			string += i._name + " "
+		print(string)
+
+	def printEdges(self, route):
+		for i in range(0, len(route) - 1):
+			print(route[i]._name, " to ", route[i+1]._name, ": ", route[i].costTo(route[i+1]))
+		print(route[-1]._name, " to ", route[0]._name, ": ", route[-1].costTo(route[0]))
+
+
 		
 	def fancy( self,time_allowance=60.0 ):
-		pass
+		results = {}
+		cities = self._scenario.getCities()
+		ncities = len(cities)
+		foundTour = False
+		count = 0
+		bssf = None
+		start_time = time.time()
+
+		# perm = np.random.permutation( ncities )
+		# start_node = cities[perm[0]] #randomly selects a node to be the first node
+		start_node = cities[2]
+
+		self.unvisitedCities = set(cities)
+		self.visitedCities = set()
+
+		route = self.createInitialLoop(start_node) #creates the initial loop which only has three nodes
+		# print("The initial route is")
+		# self.printRoute(route)
+		# self.printEdges(route)
+		# print()
+
+		for city in route:
+			self.visitedCities.add(city)
+			self.unvisitedCities.remove(city)
+		
+		while not foundTour and time.time()-start_time < time_allowance:
+			
+			nearestUnvisitedNode, index = self.findNearestNodeToRoute(route)
+			route = self.insertNode(route, nearestUnvisitedNode, index)
+			self.visitedCities.add(nearestUnvisitedNode)
+			self.unvisitedCities.remove(nearestUnvisitedNode)	
+
+			# print("New route:")
+			# self.printRoute(route)
+			# self.printEdges(route)
+			# print()		
+			
+			if (len(route) == ncities):
+				# Found a valid route
+				foundTour = True
+			count += 1
+			bssf = TSPSolution(route)
+			# if (count > 3):
+			# 	break
+
+	
+
+
+		foundTour = True
+		bssf = TSPSolution(route)
+
+		# print("Found solution:")
+		# self.printRoute(route)
+		# print("Length: ", bssf.cost)
+		# print(route[0]._name, " to ", route[1]._name, ": ", route[0].costTo(route[1]))
+		# print(route[1]._name, " to ", route[2]._name, ": ", route[1].costTo(route[2]))
+		# print(route[2]._name, " to ", route[0]._name, ": ", route[2].costTo(route[0]))
+		# print()
+
+		end_time = time.time()
+		results['cost'] = bssf.cost if foundTour else math.inf
+		results['time'] = end_time - start_time
+		results['count'] = count
+		results['soln'] = bssf
+		results['max'] = None
+		results['total'] = None
+		results['pruned'] = None
+		return results
 		
 
 
