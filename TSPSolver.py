@@ -84,9 +84,9 @@ class TSPSolver:
 	'''
 
 	# Additional comments within GreedySolver.py
-    	# Time complexity: O(N^3)
-    	# Space complexity: O(N)
-    	def greedy(self, time_allowance=60.0):
+	# Time complexity: O(N^3)
+	# Space complexity: O(N)
+	def greedy(self, time_allowance=60.0):
 		solver = GreedySolver(self, time_allowance)
 		solver.solve()
 		return solver.getResults()
